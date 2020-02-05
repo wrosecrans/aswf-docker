@@ -8,15 +8,15 @@ repo_branch=${4:-""}
 
 if [ "$repo_branch" = "refs/heads/master" ] && [ "$repo_uri" = "https://github.com/AcademySoftwareFoundation/aswf-docker" ]
 then
-    docker_build_date=`date -u +'%Y-%m-%dT%H:%M:%SZ'`
-    docker_vcs_ref=`git rev-parse --short HEAD`
+    docker_build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    docker_vcs_ref=$(git rev-parse --short HEAD)
     docker_org=aswf
     packages_docker_org=aswf
     push_images=true
 elif [ "$repo_branch" = "refs/heads/testing" ]
 then
-    docker_build_date=`date -u +'%Y-%m-%dT%H:%M:%SZ'`
-    docker_vcs_ref=`git rev-parse --short HEAD`
+    docker_build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+    docker_vcs_ref=$(git rev-parse --short HEAD)
     docker_org=aswftesting
     packages_docker_org=aswftesting
     push_images=true
@@ -31,7 +31,7 @@ fi
 # Replace aswftesting with aswf (https://github.com/docker/buildx/issues/148 should allow this hack to be removed)
 if [ "${docker_org}" != "aswftesting" ]
 then
-    sed -i --expression="s/aswftesting/${docker_org}/g" docker-bake-${image_name}-${image_version}.hcl
+    sed -i --expression="s/aswftesting/${docker_org}/g" "docker-bake-${image_name}-${image_version}.hcl"
 fi
 
 if [ "${push_images}" = "true" ]
@@ -70,4 +70,5 @@ else
         --set settings.output=type=docker"
 fi
 
+# shellcheck disable=SC2086
 docker buildx bake ${BUILDX_ARGS}
