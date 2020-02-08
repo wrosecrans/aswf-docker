@@ -2,6 +2,14 @@
 
 set -ex
 
+NUM_CPUS=$(command -v nproc>/dev/null && nproc || echo 4)
+
+if [ -z ${BOOST_VERSION+x} ]; then
+    echo "BOOST_VERSION is unset.  It is required for build_boost.sh"
+    exit 1
+fi
+
+
 BOOST_MAJOR_MINOR=$(echo "${BOOST_VERSION}" | cut -d. -f-2)
 BOOST_MAJOR=$(echo "${BOOST_VERSION}" | cut -d. -f-1)
 BOOST_MINOR=$(echo "${BOOST_MAJOR_MINOR}" | cut -d. -f2-)
@@ -25,13 +33,14 @@ fi
 mkdir boost
 cd boost
 
-if [ ! -f $DOWNLOADS_DIR/boost-${BOOST_VERSION}.tar.gz ]; then
-    curl --location https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/boost_${BOOST_VERSION_U}.tar.gz -o $DOWNLOADS_DIR/boost-${BOOST_VERSION}.tar.gz
+if [ ! -f "${DOWNLOADS_DIR}/boost-${BOOST_VERSION}.tar.gz" ]; then
+    curl --location "https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/boost_${BOOST_VERSION_U}.tar.gz" -o "${DOWNLOADS_DIR}/boost-${BOOST_VERSION}.tar.gz"
 fi
 
-tar -xzf $DOWNLOADS_DIR/boost-${BOOST_VERSION}.tar.gz
+tar -xzf "${DOWNLOADS_DIR}/boost-${BOOST_VERSION}.tar.gz"
 
-cd boost_${BOOST_VERSION_U}
+cd "boost_${BOOST_VERSION_U}"
+# shellcheck disable=SC2086
 sh bootstrap.sh ${BOOTSTRAP_ARGS}
 ./b2 install -j2 variant=release toolset=gcc link=shared \
     --with-atomic \
@@ -59,7 +68,7 @@ sh bootstrap.sh ${BOOTSTRAP_ARGS}
     --with-timer \
     --with-type_erasure \
     --with-wave \
-    --prefix=${ASWF_INSTALL_PREFIX} \
+    --prefix="${ASWF_INSTALL_PREFIX}" \
     --with-python \
     ${BOOST_EXTRA_ARGS}
 
