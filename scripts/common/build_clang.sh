@@ -2,19 +2,22 @@
 
 set -ex
 
-if [ ! -f $DOWNLOADS_DIR/llvmorg-${CLANG_VERSION}.tar.gz ]; then
-    curl --location https://github.com/llvm/llvm-project/archive/llvmorg-${CLANG_VERSION}.tar.gz -o $DOWNLOADS_DIR/llvmorg-${CLANG_VERSION}.tar.gz
+NUM_CPUS=$(command -v nproc>/dev/null && nproc || echo 4)
+
+
+if [ ! -f "${DOWNLOADS_DIR}/llvmorg-${CLANG_VERSION}.tar.gz" ]; then
+    curl --location "https://github.com/llvm/llvm-project/archive/llvmorg-${CLANG_VERSION}.tar.gz" -o "${DOWNLOADS_DIR}/llvmorg-${CLANG_VERSION}.tar.gz"
 fi
 
-tar xf $DOWNLOADS_DIR/llvmorg-${CLANG_VERSION}.tar.gz
-cd llvm-project-llvmorg-${CLANG_VERSION}
+tar xf "${DOWNLOADS_DIR}/llvmorg-${CLANG_VERSION}.tar.gz"
+cd "llvm-project-llvmorg-${CLANG_VERSION}"
 
 mkdir build
 cd build
 cmake -DLLVM_ENABLE_PROJECTS=clang \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_TARGETS_TO_BUILD=host \
-      -DCMAKE_INSTALL_PREFIX=${ASWF_INSTALL_PREFIX} \
+      -DCMAKE_INSTALL_PREFIX="${ASWF_INSTALL_PREFIX}" \
       -DCLANG_INCLUDE_DOCS=OFF \
       -DCLANG_INCLUDE_TESTS=OFF \
       -DCLANG_TOOLS_INCLUDE_EXTRA_DOCS=OFF \
@@ -68,8 +71,8 @@ cmake -DLLVM_ENABLE_PROJECTS=clang \
       -DLLVM_BUILD_TESTS=OFF \
       -DLLVM_INCLUDE_GO_TESTS=OFF \
       ../llvm
-make -j4
+make -j "$NUM_CPUS"
 make install
 
 cd ../..
-rm -rf llvm-project-llvmorg-${CLANG_VERSION}
+rm -rf "llvm-project-llvmorg-${CLANG_VERSION}"
