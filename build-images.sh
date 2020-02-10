@@ -1,4 +1,24 @@
 #!/usr/bin/env bash
+
+help() {
+  echo "ASWF Image Builder script."
+  echo "Usage: "
+  echo "  $0 [image_name] [image_version] [repo_uri] [repo_branch]"
+  echo " "
+  echo "     image_name:    which Docker image you wish to build."
+  echo "                      one of [base, base-qt, common, ocio, opencue, openexr, openvdb, usd, vfxall] "
+  echo "     image_version: VFX Reference Platform version."
+  echo "                      one of [2018, 2019, 2020]"
+  echo "     repo_url:      (Optional)"
+  echo "     repo_branch:   (Optional)"
+
+}
+
+if [[ "$#" -lt 2 ]] || [[ "$#" -gt 4 ]] ; then
+    help
+    exit 1
+fi
+
 set -ex
 
 image_name=${1}
